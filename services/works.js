@@ -1,28 +1,34 @@
 const {worksMock} = require('../mocks/works');
+const MongoLib = require('../lib/mongo');
 
-class WorksService{
-    async getWorks(){
-        const works = await Promise.resolve(worksMock);
+class WorksService{    
+    constructor(){
+        this.collection = 'works';
+        this.mongoDb = new MongoLib();
+    }
+    async getWorks({tags}){
+        const query = tags && {tags: {$in: tags}}
+        const works = await this.mongoDb.getAll(this.collection, query);
         return works || [];
     }
 
-    async getWork(){
-        const getWork = await Promise.resolve(worksMock[3]);
+    async getWork({workId}){
+        const getWork = await this.mongoDb.get(this.collection, workId);
         return getWork || {};
     }
 
-    async createWork(){
-        const createWork = await Promise.resolve(worksMock[3].id);
+    async createWork({work}){
+        const createWork = await this.mongoDb.create(this.collection, work);
         return createWork;
     }
 
-    async updateWork(){
-        const updateWork = await Promise.resolve(worksMock[3].id);
+    async updateWork({workId, work}){
+        const updateWork = await this.mongoDb.update(this.collection,workId, work);
         return updateWork;
     }
 
-    async deleteWork(){
-        const deleteWork = await Promise.resolve(worksMock[3].id);
+    async deleteWork({workId}){
+        const deleteWork = await this.mongoDb.delete(this.collection,workId);
         return deleteWork;
     }
 }
